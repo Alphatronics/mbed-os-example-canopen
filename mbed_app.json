@@ -1,0 +1,10 @@
+{
+    "target_overrides": {
+        "LPC1768": {
+            "target.features_remove": ["NANOSTACK", "BLE", "LWIP"]
+        },
+        "NUCLEO_F091RC": {
+            "target.features_remove": ["NANOSTACK", "BLE", "LWIP"]
+        }
+    }
+}
