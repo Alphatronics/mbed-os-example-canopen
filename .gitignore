@@ -2,3 +2,5 @@
 .mbed
 projectfiles
 *.py*
+.vscode
+GettingStarted.html
