@@ -3,12 +3,13 @@ CANopenNode/stack/drvTemplate/*
 CANopenNode/stack/dsPIC30F/*
 CANopenNode/stack/eCos/*
 CANopenNode/stack/LPC177x_8x/*
+CANopenNode/stack/LPC1768/*
 CANopenNode/stack/MCF5282/*
+CANopenNode/stack/neuberger-socketCAN/*
 CANopenNode/stack/PIC24_dsPIC33/*
 CANopenNode/stack/PIC32/*
 CANopenNode/stack/SAM3X/*
 CANopenNode/stack/socketCAN/*
 CANopenNode/stack/STM32/*
 CANopenNode/stack/STM32F3/*
-CANopenNode/stack/LPC1768/*
 mbed-os/features/nanostack/sal-stack-nanostack/source/Service_Libs/utils/ns_crc*
