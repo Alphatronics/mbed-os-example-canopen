@@ -1,5 +1,10 @@
 {
     "target_overrides": {
+        "*": {
+            "platform.stdio-baud-rate": 115200,
+            "platform.default-serial-baud-rate": 115200,
+            "platform.stdio-convert-newlines": true
+        },
         "LPC1768": {
             "target.features_remove": ["NANOSTACK", "BLE", "LWIP"]
         },
