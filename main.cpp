@@ -6,6 +6,7 @@
 #include "mbed.h"
 
 #include "CANopen.h"
+#include "config.h"
 
 extern "C" {
 #include "CO_driver.h"
@@ -13,15 +14,10 @@ extern "C" {
 }
 
 
-#define CAN_MODULE_ADDRESS  CAN_1   // the hardware address of the can bus, since our STM32F091 has only one CAN bus this param is of no use so any value is OK
-#define CANOPEN_NODE_ID     10      // CANopen NODE ID
-#define CAN_BITRATE         250     // in kbps
-
-
 volatile uint16_t   CO_timer1ms = 0U;        /* variable increments each millisecond */
 Thread bgThread;
-DigitalOut userLed(LED1);
-
+DigitalOut userLed(LED1, 1);
+DigitalIn userButton(USER_BUTTON);
 
 
 static void tmrTask_thread(void);
@@ -60,18 +56,18 @@ int main()
         while(resetType == CO_RESET_NOT)
         {
             // STATE MACHINE: loop for normal program execution 
-            // Loops very rapidly, a lot faster than the bgThread! 
+
+            // calc the amount of millis have passed since we last ran this loop
             uint16_t currentTicksMs = CO_timer1ms;
             uint16_t millisDiff = currentTicksMs - previousTicksMs;
             previousTicksMs = currentTicksMs;
 
-
-            // CANopen process (note: millisDiff will typically be 0ms or 1ms since this loop runs very fast)
+            // CANopen process (note: millisDiff will typically be 0ms or 1ms since this code loops faster than the bgThread)
             resetType = CO_process(CO, millisDiff, NULL);
 
             // Nonblocking application code may go here.
-
-            // Process EEPROM
+            // ex: killing the watchdog may be a good idea
+            // ex: process EEPROM
         }
 
         printf("STATE MACHINE: communication reset\n");
@@ -96,26 +92,29 @@ int main()
 // timer thread executes in constant intervals
 static void tmrTask_thread(void)
 {
-    static const int TMR_TASK_INTERVAL_MS = 1;                               // Interval of tmrTask thread in millis
-    static const int TMR_TASK_INTERVAL_US = TMR_TASK_INTERVAL_MS*1000;       // Interval of tmrTask thread in micros
+    static const int TMR_TASK_INTERVAL_1MS_INMS = 1;                               // Interval of tmrTask thread in millis
+    static const int TMR_TASK_INTERVAL_1MS_INUS = TMR_TASK_INTERVAL_1MS_INMS*1000;       // Interval of tmrTask thread in micros
     for(;;) {
-        ThisThread::sleep_for(TMR_TASK_INTERVAL_MS);   //sleep 1 ms
+        ThisThread::sleep_for(TMR_TASK_INTERVAL_1MS_INMS);   //sleep 1 ms
 
         CO_timer1ms++;
 
         if(CO->CANmodule[0]->CANnormal) {
             bool_t syncWas;
 
-            // Process Sync and read inputs
-            syncWas = CO_process_SYNC_RPDO(CO, TMR_TASK_INTERVAL_US);
+            // Process Sync and read RPDO
+            syncWas = CO_process_SYNC_RPDO(CO, TMR_TASK_INTERVAL_1MS_INUS);
 
-            // Further I/O or nonblocking application code may go here.
-            if(CO_timer1ms % 50 == 0) {
-                userLed = !userLed;
-            }
+            //apply RPDO value to DigitalOut(s)
+            uint8_t outputmap = OD_writeOutput8Bit[0];
+            userLed.write(outputmap & 0x01);                //userLed is first bit of RPDO-0 (200+nodeid)
 
-            // Write outputs
-            CO_process_TPDO(CO, syncWas, TMR_TASK_INTERVAL_US);
+            //apply DigitalIn(s) value to TPDO
+            uint8_t inputmap = (userButton.read() == 0 ? 1 : 0) & 0x01;    //(inverted) userButton is first bit of TPDO-0 (180+nodeid)
+            OD_readInput8Bit[0] = inputmap;
+
+            // Process TPDO
+            CO_process_TPDO(CO, syncWas, TMR_TASK_INTERVAL_1MS_INUS);
 
             // verify timer overflow
             if(0) {
