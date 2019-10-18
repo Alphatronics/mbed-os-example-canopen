@@ -219,9 +219,9 @@ struct sCO_OD_ROM{
 /*1005      */ uint32_t     COB_ID_SYNCMessage;
 /*1006      */ uint32_t     communicationCyclePeriod;
 /*1007      */ uint32_t     synchronousWindowLength;
-/*1008      */ char_t manufacturerDeviceName[11];
+/*1008      */ char_t manufacturerDeviceName[6];
 /*1009      */ char_t manufacturerHardwareVersion[4];
-/*100A      */ char_t manufacturerSoftwareVersion[4];
+/*100A      */ char_t manufacturerSoftwareVersion[10];
 /*1014      */ uint32_t     COB_ID_EMCY;
 /*1015      */ uint16_t     inhibitTimeEMCY;
 /*1016      */ uint32_t     consumerHeartbeatTime[4];
@@ -278,7 +278,7 @@ extern struct sCO_OD_ROM CO_OD_ROM;
 
 /*1008, Data Type: char_t, Array[11] */
       #define OD_manufacturerDeviceName                  CO_OD_ROM.manufacturerDeviceName
-      #define ODL_manufacturerDeviceName_stringLength    11
+      #define ODL_manufacturerDeviceName_stringLength    6
 
 /*1009, Data Type: char_t, Array[4] */
       #define OD_manufacturerHardwareVersion             CO_OD_ROM.manufacturerHardwareVersion
@@ -286,7 +286,7 @@ extern struct sCO_OD_ROM CO_OD_ROM;
 
 /*100A, Data Type: char_t, Array[4] */
       #define OD_manufacturerSoftwareVersion             CO_OD_ROM.manufacturerSoftwareVersion
-      #define ODL_manufacturerSoftwareVersion_stringLength 4
+      #define ODL_manufacturerSoftwareVersion_stringLength 10
 
 /*1010, Data Type: uint32_t, Array[1] */
       #define OD_storeParameters                         CO_OD_RAM.storeParameters

@@ -113,6 +113,8 @@ static void tmrTask_thread(void)
             uint8_t inputmap = (userButton.read() == 0 ? 1 : 0) & 0x01;    //(inverted) userButton is first bit of TPDO-0 (180+nodeid)
             OD_readInput8Bit[0] = inputmap;
 
+            OD_temperature[ODA_temperature_mainPCB] = 25;
+
             // Process TPDO
             CO_process_TPDO(CO, syncWas, TMR_TASK_INTERVAL_1MS_INUS);
 
