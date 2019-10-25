@@ -60,17 +60,17 @@
    FILE INFO:
       FileName:     IO Example
       FileVersion:  -
-      CreationTime: 18:04:29
-      CreationDate: 2016-03-25
-      CreatedBy:    JP
+      CreationTime: 13:04:00
+      CreationDate: 2019-10-10
+      CreatedBy:    GVL
 *******************************************************************************/
 
 
 /*******************************************************************************
    DEVICE INFO:
-      VendorName:     CANopenNode
+      VendorName:     Alphatronics
       VendorNumber:   0
-      ProductName:    CANopenNode
+      ProductName:    AP1234
       ProductNumber:  0
 *******************************************************************************/
 
@@ -80,7 +80,7 @@
 *******************************************************************************/
    #define CO_NO_SYNC                     1   //Associated objects: 1005, 1006, 1007, 2103, 2104
    #define CO_NO_EMERGENCY                1   //Associated objects: 1014, 1015
-   #define CO_NO_SDO_SERVER               1   //Associated objects: 1200
+   #define CO_NO_SDO_SERVER               1   //Associated objects: 1200, 1F50
    #define CO_NO_SDO_CLIENT               0   
    #define CO_NO_RPDO                     4   //Associated objects: 1400, 1401, 1402, 1403, 1600, 1601, 1602, 1603
    #define CO_NO_TPDO                     4   //Associated objects: 1800, 1801, 1802, 1803, 1A00, 1A01, 1A02, 1A03
@@ -92,7 +92,7 @@
 /*******************************************************************************
    OBJECT DICTIONARY
 *******************************************************************************/
-   #define CO_OD_NoOfElements             55
+   #define CO_OD_NoOfElements             56
 
 
 /*******************************************************************************
@@ -151,6 +151,11 @@
                uint32_t     mappedObject7;
                uint32_t     mappedObject8;
                }              OD_TPDOMappingParameter_t;
+
+/*1F50[1]   */ typedef struct{
+               uint8_t      maxSubIndex;
+               domain_t         domain_t;
+               }              OD_ProgramDownload_t;
 
 /*2120      */ typedef struct{
                uint8_t      maxSubIndex;
@@ -234,6 +239,7 @@ struct sCO_OD_ROM{
 /*1600[4]   */ OD_RPDOMappingParameter_t RPDOMappingParameter[4];
 /*1800[4]   */ OD_TPDOCommunicationParameter_t TPDOCommunicationParameter[4];
 /*1A00[4]   */ OD_TPDOMappingParameter_t TPDOMappingParameter[4];
+/*1F50      */ OD_ProgramDownload_t ProgramDownload;
 /*1F80      */ uint32_t     NMTStartup;
 /*2101      */ uint8_t      CANNodeID;
 /*2102      */ uint16_t     CANBitRate;

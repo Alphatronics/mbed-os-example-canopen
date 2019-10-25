@@ -10,8 +10,12 @@
 
 extern "C" {
 #include "CO_driver.h"
-//#include "CO_CAN.h"
+
 }
+
+#include "CO_fwupgrade.h"
+
+#include "DataFlashBlockDevice.h"
 
 
 volatile uint16_t   CO_timer1ms = 0U;        /* variable increments each millisecond */
@@ -19,16 +23,48 @@ Thread bgThread;
 DigitalOut userLed(LED1, 1);
 DigitalIn userButton(USER_BUTTON);
 
+DigitalOut at45rst(PB_10);
+BlockDevice* nand = NULL;
 
 static void tmrTask_thread(void);
 
+
+int initStorage()
+{
+    printf("Init storage...\n");
+    nand = BlockDevice::get_default_instance();
+
+    //reset
+    at45rst = 0;
+    wait_ms(100);
+    at45rst = 1;
+    wait_ms(100);
+    // Initialize the SPI flash device and print the memory layout
+    int initcode = nand->init();
+    if (initcode != BD_ERROR_OK) {
+        printf("dataflash init failed, error code: %d \n", initcode);
+        return initcode;
+    }
+    printf("dataflash ok (size: %llu kbytes, ", (nand->size()/1024));
+    printf("read: %llu bytes, ", nand->get_read_size());
+    printf("program: %llu bytes, ", nand->get_program_size());
+    printf("erase: %llu bytes)\n", nand->get_erase_size());
+    
+    return initcode;
+}
 
 
 // main() runs in its own thread in the OS
 int main() 
 {
-    printf("######## START ##########\n");
-    printf("STATE MACHINE: boot\n");
+#if defined(TARGET_NUCLEO_F091RC)
+    printf("\n####### NUCLEO F091RC @ %luMHz #######\n", SystemCoreClock/1000000);
+#else
+    error("\n####### target UNSUPPORTED #######\n");
+#endif
+    
+    int storageInitCode = initStorage();
+
     OD_powerOnCounter++;    // increment boot counter
 
     bgThread.start(callback(tmrTask_thread));
@@ -44,6 +80,15 @@ int main()
             // CO_errorReport(CO->em, CO_EM_MEMORY_ALLOCATION_ERROR, CO_EMC_SOFTWARE_INTERNAL, err); 
             break;
         }
+
+        // signal storage failure over CAN
+        if (storageInitCode != BD_ERROR_OK) {
+            CO_errorReport(CO->em, CO_EM_NON_VOLATILE_MEMORY, CO_EMC_SOFTWARE_INTERNAL, err); 
+            break;
+        }
+
+        // register object dictionary functions to support fwupgrade via object 0x1f50
+        CO_FwUpgradeRegisterODFunctions(CO);
 
         // allow bgthread to process SYNC, RPDO and TPDO
         printf("Enabling bgthread processing\n");
@@ -68,6 +113,10 @@ int main()
             // Nonblocking application code may go here.
             // ex: killing the watchdog may be a good idea
             // ex: process EEPROM
+            if(CO_FwUpgradeCompleted()) {
+                CO_VerifyFwUpgradeCandidate();
+                resetType = CO_RESET_APP;
+            }
         }
 
         printf("STATE MACHINE: communication reset\n");
@@ -84,6 +133,8 @@ int main()
     CO_delete(CAN_MODULE_ADDRESS);
 
     // reset
+    if(nand)
+        nand->deinit();
     system_reset();
     return 0;
 }

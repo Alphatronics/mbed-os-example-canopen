@@ -135,6 +135,7 @@ struct sCO_OD_EEPROM CO_OD_EEPROM = {
 /*1A02*/ {0x0, 0x0L, 0x0L, 0x0L, 0x0L, 0x0L, 0x0L, 0x0L, 0x0L},
 /*1A03*/ {0x0, 0x0L, 0x0L, 0x0L, 0x0L, 0x0L, 0x0L, 0x0L, 0x0L}},
 //
+/*1F50*/ {0x1, 0x0},
 /*1F80*/ 0x04L, //no auto startup of slave node
 /*2101*/ CANOPEN_NODE_ID,
 /*2102*/ 0xFA,
@@ -285,13 +286,16 @@ struct sCO_OD_EEPROM CO_OD_EEPROM = {
            {(void*)&CO_OD_ROM.TPDOMappingParameter[3].mappedObject6, 0x8D,  4},
            {(void*)&CO_OD_ROM.TPDOMappingParameter[3].mappedObject7, 0x8D,  4},
            {(void*)&CO_OD_ROM.TPDOMappingParameter[3].mappedObject8, 0x8D,  4}};
+/*0x1F50*/ const CO_OD_entryRecord_t OD_record1F50[2] = {
+           {(void*)&CO_OD_ROM.ProgramDownload.maxSubIndex, 0x06,  1},
+           {0, 0x0E, 0}};
 /*0x2120*/ const CO_OD_entryRecord_t OD_record2120[6] = {
            {(void*)&CO_OD_RAM.testVar.maxSubIndex, 0x06,  1},
            {(void*)&CO_OD_RAM.testVar.I64, 0xBE,  8},
            {(void*)&CO_OD_RAM.testVar.U64, 0xBE,  8},
            {(void*)&CO_OD_RAM.testVar.R32, 0xBE,  4},
            {(void*)&CO_OD_RAM.testVar.R64, 0xBE,  8},
-           {0, 0x0E,  0}};
+           {0, 0x0E,  0}}; //domain_t:  pointer to data, attributes: [var in RAM mem, read, write], length always 0 for Domain
 /*0x2130*/ const CO_OD_entryRecord_t OD_record2130[4] = {
            {(void*)&CO_OD_RAM.time.maxSubIndex, 0x06,  1},
            {(void*)&CO_OD_RAM.time.string[0], 0x06, 30},
@@ -339,6 +343,7 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
 {0x1A01, 0x08, 0x00,  0, (void*)&OD_record1A01},
 {0x1A02, 0x08, 0x00,  0, (void*)&OD_record1A02},
 {0x1A03, 0x08, 0x00,  0, (void*)&OD_record1A03},
+{0x1F50, 0x02, 0x00,  0, (void*)&OD_record1F50},
 {0x1F80, 0x00, 0x8D,  4, (void*)&CO_OD_ROM.NMTStartup},
 {0x2100, 0x00, 0x36, 10, (void*)&CO_OD_RAM.errorStatusBits[0]},
 {0x2101, 0x00, 0x0D,  1, (void*)&CO_OD_ROM.CANNodeID},
@@ -352,7 +357,7 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
 {0x2110, 0x10, 0xFE,  4, (void*)&CO_OD_RAM.variableInt32[0]},
 {0x2111, 0x10, 0xFD,  4, (void*)&CO_OD_ROM.variableROMInt32[0]},
 {0x2112, 0x10, 0xFF,  4, (void*)&CO_OD_EEPROM.variableNVInt32[0]},
-{0x2120, 0x05, 0x00,  0, (void*)&OD_record2120},
+{0x2120, 0x05, 0x00,  0, (void*)&OD_record2120},  //index in OD=0x2120, maxsubindex=5, attribute=0 (always for record), length=0 (always for Domain), pointer to data
 {0x2130, 0x03, 0x00,  0, (void*)&OD_record2130},
 {0x6000, 0x08, 0x76,  1, (void*)&CO_OD_RAM.readInput8Bit[0]},
 {0x6200, 0x08, 0x3E,  1, (void*)&CO_OD_RAM.writeOutput8Bit[0]},

@@ -97,7 +97,7 @@ Image: .\BUILD\NUCLEO_F091RC\GCC_ARM-DEBUG\mbed-os-example-canopen.bin
 
 ## Wiring
 
-![Wiring](doc/wiring.jpg)
+![Wiring](doc/wiring_at45db.jpg)
 
 ## Output
 

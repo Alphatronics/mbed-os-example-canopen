@@ -1,4 +1,7 @@
 {
+    "macros": [
+
+    ],
     "target_overrides": {
         "*": {
             "platform.stdio-baud-rate": 115200,
@@ -9,7 +12,15 @@
             "target.features_remove": ["NANOSTACK", "BLE", "LWIP"]
         },
         "NUCLEO_F091RC": {
-            "target.features_remove": ["NANOSTACK", "BLE", "LWIP"]
+            "target.features_remove": ["NANOSTACK", "BLE", "LWIP"],
+            "target.components_add": [
+                "DATAFLASH"
+            ],
+            "dataflash.binary-size": true,
+            "dataflash.SPI_MOSI": "PB_5",
+            "dataflash.SPI_MISO": "PB_4",
+            "dataflash.SPI_CLK":  "PB_3",
+            "dataflash.SPI_CS":   "PA_8"
         }
     }
 }
