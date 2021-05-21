@@ -37,7 +37,7 @@ int main()
     while(resetType != CO_RESET_APP)
     {
         // initialize CANopen
-        CO_ReturnError_t err = CO_init(CAN_MODULE_ADDRESS, CANOPEN_NODE_ID, CAN_BITRATE);
+        CO_ReturnError_t err = CO_init((void*)CAN_MODULE_ADDRESS, CANOPEN_DEFAULT_NODE_ID, CAN_BITRATE);
         if(err != CO_ERROR_NO){
             printf("ERROR: CO_init, code: %d\n", err);
             ThisThread::sleep_for(3000);   //sleep 3 seconds
@@ -81,7 +81,7 @@ int main()
     bgThread.terminate();
 
     // delete objects from memory
-    CO_delete(CAN_MODULE_ADDRESS);
+    CO_delete((void*)CAN_MODULE_ADDRESS);
 
     // reset
     system_reset();
@@ -103,7 +103,8 @@ static void tmrTask_thread(void)
             bool_t syncWas;
 
             // Process Sync and read RPDO
-            syncWas = CO_process_SYNC_RPDO(CO, TMR_TASK_INTERVAL_1MS_INUS);
+            syncWas = CO_process_SYNC(CO, TMR_TASK_INTERVAL_1MS_INUS);
+            CO_process_RPDO(CO, syncWas);
 
             //apply RPDO value to DigitalOut(s)
             uint8_t outputmap = OD_writeOutput8Bit[0];
