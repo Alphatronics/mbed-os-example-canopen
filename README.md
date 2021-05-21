@@ -1,5 +1,7 @@
 # CANopenNode example for Mbed OS
 
+[![CI master](https://github.com/Alphatronics/mbed-os-example-canopen/actions/workflows/master.yml/badge.svg)](https://github.com/Alphatronics/mbed-os-example-canopen/actions/workflows/master.yml)
+
 This guide reviews the steps required to get CANopenNode working on an Mbed OS platform.
 
 **CANopenNode** is free and open source CANopen Stack.
