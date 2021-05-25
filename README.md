@@ -33,13 +33,18 @@ CANopenNode homepage is https://github.com/CANopenNode/CANopenNode
  - Sync producer/consumer.
  - Non-volatile storage.
 
-## Usage of the CANopenNode
+## Usage of CANopenNode
 
 CANopenNode itself doesn't have complete working code for any microcontroller.
 It is only the library with the stack and drivers for different
 microcontrollers. It has example, which should compile on any system with
 template driver (drvTemplate), which actually doesn't access CAN hardware.
 CANopenNode should be used as a git submodule included in a project with
+
+## Supported boards
+
+* STM32 Nucleo F091RC
+* STM32 Nucleo L496ZG
 
 ## Deploying the firmware
 
